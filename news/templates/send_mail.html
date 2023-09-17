@@ -1,0 +1,14 @@
+{% extends 'layout/default.html' %}
+{% load custom_filters %}
+
+{% block title %}
+It`s a new Post
+{% endblock title %}
+
+{% block content %}
+
+<h2> Здравствуй, {{ user.username }} Новая статья в твоем любимом разделе!</h2>
+    <h3> {{ post.title }}</h3>
+    <p>{{ post.text|truncatechars:50 }} </p>
+
+{% endblock content %}

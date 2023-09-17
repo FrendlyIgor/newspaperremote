@@ -1,0 +1,49 @@
+<!--  наследуемся от шаблона default.html -->
+{% extends 'layout/default.html' %}
+{% load custom_filters %}
+{% block title %}
+Поиск
+{% endblock title %}
+
+<!-- В контенте на странице мы выводим все товары -->
+{% block content %}
+    <h1>Найдено постов - {{ posts|length }}</h1>
+    <h3>{{ time_now|date:'d m Y' }}</h3>
+    <h3>{{ value1|default_if_none:"ничего" }} </h3>
+    <hr>
+    {% if posts %}
+        <form method="GET">
+            {{ filter.form }}
+            <!-- Форму от фильтров за нас сделает Django. А вот кнопку, увы, придётся делать самим -->
+            <input class="btn btn-primary" type="submit" value="Найти">
+        </form>
+        <table class = "table">
+            <tr>
+                <td scope="col">
+                    Название
+                </td>
+                <td scope="col">
+                    Дата
+                </td>
+                <td scope="col">
+                    Текст
+                </td>
+            </tr>
+        {% for post in filter.qs %}
+            <tr>
+                <td>
+                    {{ post.title|censor }}
+                </td>
+                <td>
+                    {{ post.dataCategory|date:'d m Y' }}
+                </td>
+                <td>
+                    {{ post.text|truncatewords:20|censor }}
+                </td>
+            </tr>
+        {% endfor %}
+        </table>
+    {% else %}
+        <h2>Постов нет</h2>
+    {% endif %}
+{% endblock content %}

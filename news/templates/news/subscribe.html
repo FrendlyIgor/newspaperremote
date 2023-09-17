@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    {{category.name}}
+
+    {% if user not in subscribers %}
+        <form action="{% url 'subscribe' category.pk %}" method="Post">
+            {% csrf_token %}
+            <input type="submit" value="Подписаться"/>
+        </form>
+    {% else %}
+        <form action="{% url 'unsubscribe' category.pk %}" method="Post">
+            {% csrf_token %}
+            <input type="submit" value="Отписаться"/>
+        </form>
+    {% endif %}
+</head>
+<body>
+
+</body>
+</html>

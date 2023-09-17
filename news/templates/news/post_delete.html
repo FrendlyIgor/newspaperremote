@@ -1,0 +1,31 @@
+{% extends 'layout/default.html' %}
+{% load custom_filters %}
+
+
+{% block title %}
+Удаление поста
+{% endblock title %}
+
+{% block content %}
+
+  <h3>Delete this post?</h3>
+  <div class="card">
+  <div class="card-header">
+    <h3>
+      {{ post.title|censor }}
+    </h3>
+    <div>
+      Название: <span class="badge bg-info">{{ post.title|censor }}</span>
+      Автор: <span class="badge bg-info">{{ post.author }}</span>
+    </div>
+  </div>
+  <div class="card-body">
+    {{ post.text|censor }}
+  </div>
+  </div>
+  <form method="POST">
+    {% csrf_token %}
+      <input class="btn btn-success" type="submit" value="Delete">
+  </form>
+
+{% endblock content %}

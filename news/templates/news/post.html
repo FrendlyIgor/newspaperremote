@@ -1,0 +1,19 @@
+<!--  наследуемся от шаблона base.html -->
+{% extends 'layout/default.html' %}
+{% load custom_filters %}
+
+{% block title %}
+Пост
+{% endblock title %}
+
+<!-- В контенте на странице мы выводим конткретный пост по id -->
+{% block content %}
+    <h1>{{ post.commentUser }}</h1>
+    <h2>{{ post.title|censor }}</h2>
+    {{ post.dataCategory|date:'d m Y P' }}
+    <hr>
+    {{ post.text|censor }}
+    <hr>
+    {{ post.author }}
+   
+{% endblock content %}
