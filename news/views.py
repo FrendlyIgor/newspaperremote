@@ -1,18 +1,43 @@
 from typing import Any, Dict
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Post, User, Author, UserSubscribtion
+from .models import Post, User, Author, Category
 from datetime import datetime
-from django.shortcuts import render, HttpResponseRedirect
+from django.shortcuts import render, redirect,HttpResponseRedirect
 from django.template.loader import render_to_string
 from .filters import PostFilter
 from django.core.paginator import Paginator
 from django.core.mail import EmailMultiAlternatives
 from django.views import View
 from .forms import PostForm
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, resolve
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.conf import settings
+
+DEFAULT_FROM_EMAIL = settings.DEFAULT_FROM_EMAIL
 
     # Create your views here.
+class PostCategoryView(ListView):
+    model = Post
+    template_name = 'news/category.html'
+    context_object_name = 'posts'
+    ordering = ['-dateCreation']  # сортировка по дате в порядке убывания
+    paginate_by = 10
+#запрос на получение id
+    def get_queryset(self):
+        self.id = resolve(self.request.path_info).kwargs['pk']
+        c = Category.objects.get(id=self.id)
+        queryset = Post.objects.filter(category=c)
+        return queryset
+
+    def get_context_data(self, pk, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        category = Category.objects.get(id=self.id)
+        subscribed = category.subscribers.filter(email=user.email)#подписчики на категорию, отфильтрованные по email
+        if not subscribed:#если пользователя нет, то передаем в через контекст категорию
+            context['category'] = category
+        return context
+    
 class PostList(ListView):
     model = Post  # указываем модель, объекты которой мы будем выводить
     template_name = 'news/posts.html'  # указываем имя шаблона, в котором будет лежать HTML, в нём будут все инструкции о том, как именно пользователю должны вывестись наши объекты
@@ -45,7 +70,7 @@ class PostCreateView(CreateView, PermissionRequiredMixin):
     success_url = '/posts/'
 
     #Отправка письма при создании поста
-    def post(self, request, *args, **kwargs):
+    """ def post(self, request, *args, **kwargs):
 
         form = self.form_class(request.POST)
 
@@ -76,22 +101,17 @@ class PostCreateView(CreateView, PermissionRequiredMixin):
                 print(html_content)
 
         return HttpResponseRedirect(self.get_success_url())
-    
+     """
     # дженерик для редактирования объекта
 class PostUpdateView( UpdateView, PermissionRequiredMixin):
     template_name = 'news/post_edit.html'
     form_class = PostForm
     success_url = '/posts/post/{id}'
-    
-    
-    
+       
     def get_object(self, **kwargs):
         id = self.kwargs.get('pk')
         return Post.objects.get(pk=id)
-    
-            
-   
-   
+      
     # дженерик для удаления товара
 class PostDeleteView(DeleteView):
     template_name = 'news/post_delete.html'
@@ -118,7 +138,6 @@ class Posts(View):
 
         return render(request, 'news/posts.html', data)
 
-
 class postSearch(ListView):
     model = Post  # указываем модель, объекты которой мы будем выводить
     template_name = 'news/search.html'  # указываем имя шаблона, в котором будет лежать HTML, в нём будут все инструкции о том, 
@@ -135,8 +154,34 @@ class postSearch(ListView):
         return context
     
 class UserSubscribtion(ListView):
-    model = UserSubscribtion
-    template_name = "news/subscribe.html"
-    context_object_name = 'us_su'
-    success_url = reverse_lazy('news:post')
-    
+    pass
+
+def subscribe_to_category(request, pk):
+    user = request.user
+    category = Category.objects.get(id = pk)
+
+    if not category.subscribers.filter(id=user.id).exists():
+        category.subscribers.add(user)
+        email=user.email
+        html = render_to_string(
+            'subscribed.html',
+            {
+                'categories': category,
+                'user': user,
+            },
+        )
+
+        msg = EmailMultiAlternatives(
+            subject=f'{category} subcription',
+            body='',
+            from_email=DEFAULT_FROM_EMAIL,
+            to=[email,],
+        )
+        msg.attach_alternative(html, 'text/html')
+        try:
+            msg.send()
+        except Exception as e:
+            print(e)
+        return redirect('news:posts')
+    return redirect(request.META.get('HTTP_REFERER'))
+   

@@ -1,0 +1,24 @@
+{% extends 'layout/default.html' %}
+
+{% block title %}
+Subscribe
+{% endblock title %}
+
+{% block content %}
+
+{% if category.id %}
+<div class="subscribe">
+  <em>
+    Подписаться на
+    <strong> {{ category }}?</strong>
+  </em>
+  <a href="{% url 'news:subscribe' category.id %}" class="button button-outline">
+    Подписаться
+  </a>
+</div>
+
+{% endif %}
+
+{% include 'news/posts.html' %}
+
+{% endblock content %}

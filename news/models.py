@@ -26,15 +26,12 @@ class Author(models.Model):
 
 class Category(models.Model):
     NameCategory = models.CharField(max_length=64, unique = True)
-    subscribers = models.ManyToManyField(User, through = 'UserSubscribtion', blank = True)
-
+    subscribers = models.ManyToManyField(User, blank = True)# blank - список может быть пустым (пока еще никто не подписался)
     def __str__(self):
-        return f'{self.NameCategory}'
+        return self.NameCategory
+  
     
  #модель, объединяющая подписчика и категорию   
-class UserSubscribtion(models.Model):
-    subscriber = models.ForeignKey(User, on_delete=models.CASCADE)
-    subscribecategory = models.ForeignKey(Category, on_delete=models.CASCADE)
 
 
    
@@ -74,7 +71,7 @@ class Post(models.Model):
 
 class PostCategory(models.Model):
     postThrough = models.ForeignKey(Post, on_delete = models.CASCADE)
-    categoryThrough = models.ForeignKey(Category, on_delete = models.CASCADE)
+    category = models.ForeignKey(Category, on_delete = models.CASCADE)
 
 class Comment(models.Model):
     commentPost = models.ForeignKey(Post, on_delete=models.CASCADE)

@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from News_Portal import views
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,6 +26,6 @@ urlpatterns = [
     path('sign/', include('sign.urls')),
     path('', include('protect.urls')),
     path('accounts/', include('allauth.urls')),
-    path('news_portal/', views.index, name='portal'),
+
     
 ]
