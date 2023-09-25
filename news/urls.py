@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import PostList, PostDetail, postSearch, Posts, PostCreateView, PostDetailView, PostUpdateView, PostDeleteView, PostCategoryView, subscribe_to_category
+from .views import PostList, PostDetail, postSearch, Posts, PostCreateView, PostDetailView, PostUpdateView, PostDeleteView,\
+PostCategoryView, subscribe_to_category, unsubscribe_from_category
 app_name = 'news'
 urlpatterns = [
     # path -- означает путь. 
@@ -15,5 +16,5 @@ urlpatterns = [
     path('post/post_delete/<int:pk>/', PostDeleteView.as_view(), name='post_delete'),#  Ссылка на удаеление поста
     path('category/<int:pk>/', PostCategoryView.as_view(), name='category'),
     path('subscribe/<int:pk>/', subscribe_to_category, name='subscribe'),
-    #path('unsubscribe/', unsubscribe_from_category, name='unsubscribe'),
+    path('unsubscribe/', unsubscribe_from_category, name='unsubscribe'),
 ]

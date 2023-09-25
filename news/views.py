@@ -12,24 +12,27 @@ from .forms import PostForm
 from django.urls import reverse_lazy, resolve
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 
 DEFAULT_FROM_EMAIL = settings.DEFAULT_FROM_EMAIL
 
     # Create your views here.
+
 class PostCategoryView(ListView):
     model = Post
     template_name = 'news/category.html'
     context_object_name = 'posts'
     ordering = ['-dateCreation']  # сортировка по дате в порядке убывания
-    paginate_by = 10
+    paginate_by = 3
 #запрос на получение id
+    
     def get_queryset(self):
         self.id = resolve(self.request.path_info).kwargs['pk']
         c = Category.objects.get(id=self.id)
         queryset = Post.objects.filter(category=c)
         return queryset
 
-    def get_context_data(self, pk, **kwargs):
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
         category = Category.objects.get(id=self.id)
@@ -60,30 +63,43 @@ class PostList(ListView):
     
         # дженерик для получения деталей о посте    
 class PostDetailView(DetailView):
+   model = Post
    template_name = 'news/post_detail.html'
+   context_object_name = 'post'
    queryset = Post.objects.all()
 
     # дженерик для создания объекта. Надо указать только имя шаблона и класс формы
 class PostCreateView(CreateView, PermissionRequiredMixin):
+    """ permission_required = ('news:post_add') """
     template_name = 'news/post_add.html'
+    model = Post
     form_class = PostForm
     success_url = '/posts/'
 
-    #Отправка письма при создании поста
     """ def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        user = request.user
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = Author.objects.get_or_create(user=user)[0]
+            post.save()
+            return self.form_valid(form)
+        return redirect('news:posts') """
+    
+    def post(self, request, *args, **kwargs):
 
         form = self.form_class(request.POST)
 
         self.object = form.save()
 
-        self.postCategory_list = self.object.postCategory.all()
+        self.category_list = self.object.category.all()
 
-        for category in self.postCategory_list:
+        for category in self.category_list:
 
             for sub in category.subscribers.all():
 
                 html_content = render_to_string(
-                    'send_mail.html',
+                    'new_post.html',
                     {
                         'user': sub,
                         'post': self.object,
@@ -97,11 +113,11 @@ class PostCreateView(CreateView, PermissionRequiredMixin):
                     to=[f'{sub.email}'],
                 )
                 msg.attach_alternative(html_content, "text/html")  # добавляем html
-                # msg.send()  # отсылаем
-                print(html_content)
+                msg.send()  # отсылаем
+                #print(html_content)
 
         return HttpResponseRedirect(self.get_success_url())
-     """
+    
     # дженерик для редактирования объекта
 class PostUpdateView( UpdateView, PermissionRequiredMixin):
     template_name = 'news/post_edit.html'
@@ -117,8 +133,7 @@ class PostDeleteView(DeleteView):
     template_name = 'news/post_delete.html'
     queryset = Post.objects.all()
     success_url = reverse_lazy('news:posts') # не забываем импортировать функцию reverse_lazy из пакета django.urls
-    
-    
+       
 class PostDetail(DetailView):
     model = Post
     template_name = 'news/post.html'
@@ -155,7 +170,7 @@ class postSearch(ListView):
     
 class UserSubscribtion(ListView):
     pass
-
+@login_required
 def subscribe_to_category(request, pk):
     user = request.user
     category = Category.objects.get(id = pk)
@@ -164,9 +179,9 @@ def subscribe_to_category(request, pk):
         category.subscribers.add(user)
         email=user.email
         html = render_to_string(
-            'subscribed.html',
+            'mail/subscribed.html',
             {
-                'categories': category,
+                'category': category,
                 'user': user,
             },
         )
@@ -177,11 +192,18 @@ def subscribe_to_category(request, pk):
             from_email=DEFAULT_FROM_EMAIL,
             to=[email,],
         )
-        msg.attach_alternative(html, 'text/html')
+        msg.attach_alternative(html, 'text/html')#какого типа данные (text/html)
         try:
             msg.send()
         except Exception as e:
             print(e)
-        return redirect('news:posts')
-    return redirect(request.META.get('HTTP_REFERER'))
-   
+        return redirect('news:posts')#redirect - перенаравление
+    return redirect(request.META.get('HTTP_REFERER'))#возврат к исходной странице, с которой этот запрос поступил
+#функция отписки 
+@login_required
+def unsubscribe_from_category(request, pk):
+    user = request.user
+    category = Category.objects.get(id=pk)
+    if category.subscribers.filter(id=user.id).exists():
+        category.subscribers.remove(user)
+    return redirect('protect:index')

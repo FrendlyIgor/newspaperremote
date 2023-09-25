@@ -15,23 +15,21 @@ Post
       Название: <span class="badge bg-info">{{ post.title|censor }}</span>
       Автор: <span class="badge bg-info">{{ post.author }}</span>
       Категория:
-<!--  что-то тут с перенаправлением не то -->
-      <span class="badge bg-info"><a href="{% url 'news:category' post.id %}">{{ post.categoryType }}</a></span>
-
+      {% for c in post.category.all %}
+        <span class="badge bg-info">
+          <a href="{% url 'news:category' c.id %}" class = "category">{{ post.category }}</a>
+        </span>
+      {% endfor %}
     </div>
   </div>
   <div class="card-body">
     {{ post.text|censor }}
-    
   </div>
   <form method="POST">
     {% csrf_token %}
-    
       <a href="{% url 'news:post_edit' post.id %}">
         Изменить
-    </a>
-  </form>
- 
+      </a>
+  </form> 
 </div> 
-        
 {% endblock content %}

@@ -4,6 +4,8 @@ from django.db.models import Sum
 
 
 
+
+
 class Author(models.Model):
     authorUser = models.OneToOneField(User, on_delete=models.CASCADE)
     def __str__(self):
@@ -27,13 +29,9 @@ class Author(models.Model):
 class Category(models.Model):
     NameCategory = models.CharField(max_length=64, unique = True)
     subscribers = models.ManyToManyField(User, blank = True)# blank - список может быть пустым (пока еще никто не подписался)
+    
     def __str__(self):
         return self.NameCategory
-  
-    
- #модель, объединяющая подписчика и категорию   
-
-
    
 class Post(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
@@ -41,13 +39,13 @@ class Post(models.Model):
     news = 'nw'
     article = 'ar'
     
-    how_choise = [
+    how_choise = (
         (news, 'новость'),
         (article, 'статья'),
-    ]
+    )
     categoryType = models.CharField(max_length = 2, choices = how_choise, default = news)
     dataCategory = models.DateTimeField(auto_now_add = True)
-    postCategory = models.ManyToManyField(Category, through = "PostCategory")
+    category = models.ManyToManyField(Category, through = "PostCategory")
     title = models.CharField(max_length=128)
     text = models.TextField()
     rating = models.SmallIntegerField(default=0)

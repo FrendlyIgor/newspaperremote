@@ -6,12 +6,12 @@
     {{category.name}}
 
     {% if user not in subscribers %}
-        <form action="{% url 'subscribe' category.pk %}" method="Post">
+        <form action="{% url 'subscribe' category.id %}" method="Post">
             {% csrf_token %}
             <input type="submit" value="Подписаться"/>
         </form>
     {% else %}
-        <form action="{% url 'unsubscribe' category.pk %}" method="Post">
+        <form action="{% url 'unsubscribe' category.id %}" method="Post">
             {% csrf_token %}
             <input type="submit" value="Отписаться"/>
         </form>

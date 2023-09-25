@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from distutils.command.config import config
 from pathlib import Path
 import os
+from django.conf import settings
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -156,11 +157,14 @@ ACCOUNT_FORMS = {'signup': 'sign.forms.BasicSignupForm'}
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-EMAIL_HOST = 'smtp.yandex.ru' # адрес сервера Яндекс-почты для всех один и тот же
+EMAIL_HOST = settings.EMAIL_HOST# адрес сервера Яндекс-почты для всех один и тот же
 EMAIL_PORT = 465 # порт smtp сервера тоже одинаковый
-EMAIL_HOST_USER = 'divIgordiv' # ваше имя пользователя, например если ваша почта user@yandex.ru, то сюда надо писать user, иными словами, это всё то что идёт до собаки
-EMAIL_HOST_PASSWORD = 'vfddsmltkjnexyeb' # пароль от почты
+EMAIL_HOST_USER = settings.EMAIL_HOST_USER# ваше имя пользователя, например если ваша почта user@yandex.ru, то сюда надо писать user, иными словами, это всё то что идёт до собаки
+EMAIL_HOST_PASSWORD = settings.EMAIL_HOST_PASSWORD # пароль от почты
 EMAIL_USE_SSL = True # Яндекс использует ssl, подробнее о том, что это, почитайте на Википедии, но включать его здесь обязательно
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER + '@yandex.ru'
 SERVER_EMAIL = EMAIL_HOST_USER
 EMAIL_ADMIN = EMAIL_HOST_USER
+
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

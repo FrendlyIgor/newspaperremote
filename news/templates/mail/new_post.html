@@ -1,0 +1,22 @@
+{% extends 'layout/default.html' %}
+{% load custom_filters %}
+
+{% block title %}
+Новый пост
+{% endblock title %}
+
+{% block content %}
+
+    <h2> Здравствуй, {{ user.username }} Новая статья в твоем любимом разделе!</h2>
+    <strong>{{category.name}}</strong>
+    <h3>Автор {{post.author}}</h3>
+    <h3>Название: {{ post.title }}</h3>
+    <p>{{ post.text|truncatechars:50 }} </p>
+    <a href="http://127.0.0.1:8000{% url 'news:post_detail' post.id %}">
+        <h2>{{ post.title }}</h2>
+    </a>
+    <p>
+        {{ post.preview }}
+    </p>
+
+{% endblock content %}
