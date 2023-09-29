@@ -23,9 +23,8 @@ class PostCategoryView(ListView):
     template_name = 'news/category.html'
     context_object_name = 'posts'
     ordering = ['-dateCreation']  # сортировка по дате в порядке убывания
-    paginate_by = 3
+    paginate_by = 2
 #запрос на получение id
-    
     def get_queryset(self):
         self.id = resolve(self.request.path_info).kwargs['pk']
         c = Category.objects.get(id=self.id)

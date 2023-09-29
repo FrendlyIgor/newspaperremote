@@ -9,7 +9,7 @@ from django.db.models import Sum
 class Author(models.Model):
     authorUser = models.OneToOneField(User, on_delete=models.CASCADE)
     def __str__(self):
-        return f"Имя автора - {self.authorUser.username}"
+        return f"{self.authorUser.username}"
        
         
     ratingAuthor = models.SmallIntegerField(default = 0)
@@ -32,6 +32,11 @@ class Category(models.Model):
     
     def __str__(self):
         return self.NameCategory
+    
+    def get_category(self):
+        return self.NameCategory
+    def subscribe(self):
+        pass
    
 class Post(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)

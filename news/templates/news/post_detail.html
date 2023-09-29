@@ -6,30 +6,31 @@ Post
 {% endblock title %}
 
 {% block content %}
-<div class="card">
-  <div class="card-header">
-    <h3>
-      {{ post.title|censor }}
-    </h3>
-    <div>
-      Название: <span class="badge bg-info">{{ post.title|censor }}</span>
-      Автор: <span class="badge bg-info">{{ post.author }}</span>
-      Категория:
+  <div class="card">
+    <div class="card-header">
+      <h3>
+        {{ post.title|censor }}
+      </h3>
+      <div>
+        Название: <span class="badge bg-info">{{ post.title|censor }}</span>
+        Автор: <span class="badge bg-info">{{ post.author }}</span>
+        Категория:
       {% for c in post.category.all %}
         <span class="badge bg-info">
-          <a href="{% url 'news:category' c.id %}" class = "category">{{ post.category }}</a>
+          <a href="{% url 'news:category' c.id %}" class = "category">{{ c.category }}</a>
         </span>
       {% endfor %}
+      </div>
     </div>
-  </div>
-  <div class="card-body">
-    {{ post.text|censor }}
-  </div>
-  <form method="POST">
-    {% csrf_token %}
-      <a href="{% url 'news:post_edit' post.id %}">
-        Изменить
-      </a>
-  </form> 
-</div> 
+    <div class="card-body">
+      {{ post.text|censor }}
+    </div>
+    <form method="POST">
+      {% csrf_token %}
+        <a href="{% url 'news:post_edit' post.id %}">
+          Изменить
+        </a>
+    </form> 
+  </div> 
+
 {% endblock content %}
