@@ -42,18 +42,20 @@ INSTALLED_APPS = [
     'django.contrib.flatpages',
     'django_filters',
     'django.contrib.sites',
+    'django_apscheduler',
     
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
-    
+
     'sign',
     'protect',
     'news',
     'accounts',
     'News_Portal',
 ]
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 
 SITE_ID = 1
 

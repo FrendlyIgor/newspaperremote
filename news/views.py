@@ -14,6 +14,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 
+
 DEFAULT_FROM_EMAIL = settings.DEFAULT_FROM_EMAIL
 
     # Create your views here.
@@ -142,7 +143,7 @@ class Posts(View):
 
    def get(self, request):
         posts = Post.objects.order_by('-id')
-        p = Paginator(posts, 1) # Создаём объект класса пагинатор, передаём ему список наших товаров и их количество для одной страницы
+        p = Paginator(posts, 1) # Создаём объект класса пагинатор, передаём ему список наших постов и их количество для одной страницы
         posts = p.get_page(request.GET.get('page', 1)) # Берём номер страницы из get-запроса. Если ничего не передали, будем показывать первую страницу
         # Теперь вместо всех объектов в списке товаров хранится только нужная нам страница с товарами
 

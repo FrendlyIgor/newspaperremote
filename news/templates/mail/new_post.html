@@ -1,3 +1,4 @@
+<!-- Шаблон для отработки функции по сигналу -->
 {% extends 'layout/default.html' %}
 {% load custom_filters %}
 
@@ -8,7 +9,7 @@
 {% block content %}
 
     <h2> Здравствуй, {{ user.username }} Новая статья в твоем любимом разделе!</h2>
-    <strong>{{category.name}}</strong>
+    <strong>{{category.NameCategory}}</strong>
     <h3>Автор {{post.author}}</h3>
     <h3>Название: {{ post.title }}</h3>
     <p>{{ post.text|truncatechars:50 }} </p>

@@ -37,7 +37,7 @@ class Category(models.Model):
         return self.NameCategory
     def subscribe(self):
         pass
-   
+  
 class Post(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     
