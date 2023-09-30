@@ -13,6 +13,7 @@ from django.urls import reverse_lazy, resolve
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.core.cache import cache
 
 
 DEFAULT_FROM_EMAIL = settings.DEFAULT_FROM_EMAIL
@@ -67,6 +68,16 @@ class PostDetailView(DetailView):
    template_name = 'news/post_detail.html'
    context_object_name = 'post'
    queryset = Post.objects.all()
+
+   def get_object(self, *args, **kwargs): # переопределяем метод получения объекта, как ни странно
+        obj = cache.get(f'Пост - {self.kwargs["pk"]}', None)# кэш очень похож на словарь, и метод get  действует также
+        #он забирает объект по ключу, если его нет, то забирает None
+#Если объекта нет в кэше, то получаем его и записываем в кэш
+        if not obj:
+            obj = super().get_object(queryset=self.queryset) 
+            cache.set(f'Пост - {self.kwargs["pk"]}', obj)
+        
+        return obj
 
     # дженерик для создания объекта. Надо указать только имя шаблона и класс формы
 class PostCreateView(CreateView, PermissionRequiredMixin):

@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Sum
+from django.core.cache import cache
 
 
 
@@ -41,14 +42,14 @@ class Category(models.Model):
 class Post(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     
-    news = 'nw'
-    article = 'ar'
+    poem = 'po'
+    song = 'so'
     
     how_choise = (
-        (news, 'новость'),
-        (article, 'статья'),
+        (poem, 'стихотворение'),
+        (song, 'песня'),
     )
-    categoryType = models.CharField(max_length = 2, choices = how_choise, default = news)
+    categoryType = models.CharField(max_length = 2, choices = how_choise, default = poem)
     dataCategory = models.DateTimeField(auto_now_add = True)
     category = models.ManyToManyField(Category, through = "PostCategory")
     title = models.CharField(max_length=128)
@@ -71,6 +72,10 @@ class Post(models.Model):
     
     def get_absolute_url(self): # добавим абсолютный путь, чтобы после создания нас перебрасывало на страницу с товаром
        return f'/post/{self.id}'
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)#сначала вызываем метод родителя, чтобы объект сохранился
+        cache.delete(f'Пост - {self.pk}')#затем удаляем его из кэша, чтобы сбросить его
 
 class PostCategory(models.Model):
     postThrough = models.ForeignKey(Post, on_delete = models.CASCADE)
