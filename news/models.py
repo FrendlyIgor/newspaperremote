@@ -9,7 +9,7 @@ from django.core.cache import cache
 
 class Author(models.Model):
     authorUser = models.OneToOneField(User, on_delete=models.CASCADE)
-    def __str__(self):
+    def __str__(self):#данный метод создаёт представление в админке
         return f"{self.authorUser.username}"
        
         
@@ -36,8 +36,7 @@ class Category(models.Model):
     
     def get_category(self):
         return self.NameCategory
-    def subscribe(self):
-        pass
+    
   
 class Post(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
