@@ -16,7 +16,6 @@ class PostAdmin(admin.ModelAdmin):
 class AuthorAdmin(admin.ModelAdmin):
     list_display = ['authorUser', 'ratingAuthor']
     list_filter = ['authorUser']
-    search_fields = ['User']
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ['NameCategory']
     list_filter = ['subscribers']

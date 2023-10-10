@@ -14,7 +14,9 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
+import logging
 
+logger = logging.getLogger('django')
 
 DEFAULT_FROM_EMAIL = settings.DEFAULT_FROM_EMAIL
 
